@@ -1,4 +1,4 @@
-# Install script for directory: C:/Espressif/frameworks/esp-idf-v4.4.3/workspace/esp32-mqtt-tcp
+# Install script for directory: C:/Espressif/frameworks/esp-idf-v4.4.3/workspace/esp32-mqtt-tcp/esp32-mqtt-tcp
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Espressif/frameworks/esp-idf-v4.4.3/workspace/esp32-mqtt-tcp/build/esp-idf/cmake_install.cmake")
+  include("C:/Espressif/frameworks/esp-idf-v4.4.3/workspace/esp32-mqtt-tcp/esp32-mqtt-tcp/build/esp-idf/cmake_install.cmake")
 
 endif()
 
@@ -51,5 +51,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Espressif/frameworks/esp-idf-v4.4.3/workspace/esp32-mqtt-tcp/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Espressif/frameworks/esp-idf-v4.4.3/workspace/esp32-mqtt-tcp/esp32-mqtt-tcp/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

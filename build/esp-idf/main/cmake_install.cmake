@@ -1,4 +1,4 @@
-# Install script for directory: C:/Espressif/frameworks/esp-idf-v4.4.3/workspace/esp32-mqtt-tcp/main
+# Install script for directory: C:/Espressif/frameworks/esp-idf-v4.4.3/workspace/esp32-mqtt-tcp/esp32-mqtt-tcp/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
