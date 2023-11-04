@@ -1,11 +1,3 @@
-/* MQTT (over TCP) Example
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
 #include "driver/gpio.h"
 #include <stdio.h>
 #include <stdint.h>
@@ -42,7 +34,6 @@ xQueueHandle interputQueue1;
 xQueueHandle interputQueue2;
 esp_mqtt_client_handle_t mqtt_client;
 
-// interrupt service handler
 static void IRAM_ATTR gpio_interrupt_handler(void *args)
 {
     int pinNumber = (int)args;
@@ -54,7 +45,7 @@ static void IRAM_ATTR gpio_interrupt_handler2(void *args)
     int pinNumber = (int)args;
     xQueueSendFromISR(interputQueue2, &pinNumber, NULL);
 }
-// LED control task, received button prerssed from ISR
+
 void LED_Control_Task(void *params)
 {
     int pinNumber = 0;
@@ -65,8 +56,8 @@ void LED_Control_Task(void *params)
         {
             gpio_set_level(LED1_PIN, gpio_get_level(LED1_PIN) == 0);
             printf("GPIO %d was pressed. The state is %d\n", pinNumber, gpio_get_level(LED1_PIN));
-            sprintf(data, "%d", gpio_get_level(LED1_PIN));                         // <-- แปลงสถานะของ LED  (int) เป็น string
-            esp_mqtt_client_publish(mqtt_client, "/stu_313/lamp1", data, 0, 0, 0); // <-- publish ไปยัง broker
+            sprintf(data, "%d", gpio_get_level(LED1_PIN));
+            esp_mqtt_client_publish(mqtt_client, "/stu_313/lamp1", data, 0, 0, 0);
         }
     }
 }
@@ -81,8 +72,8 @@ void LED2_Control_Task(void *params)
         {
             gpio_set_level(LED2_PIN, gpio_get_level(LED2_PIN) == 0);
             printf("GPIO %d was pressed. The state is %d\n", pinNumber, gpio_get_level(LED1_PIN));
-            sprintf(data, "%d", gpio_get_level(LED2_PIN));                         // <-- แปลงสถานะของ LED  (int) เป็น string
-            esp_mqtt_client_publish(mqtt_client, "/stu_313/lamp2", data, 0, 0, 0); // <-- publish ไปยัง broker
+            sprintf(data, "%d", gpio_get_level(LED2_PIN));
+            esp_mqtt_client_publish(mqtt_client, "/stu_313/lamp2", data, 0, 0, 0);
         }
     }
 }
@@ -95,16 +86,6 @@ static void log_error_if_nonzero(const char *message, int error_code)
     }
 }
 
-/*
- * @brief Event handler registered to receive MQTT events
- *
- *  This function is called by the MQTT client event loop.
- *
- * @param handler_args user data registered to the event.
- * @param base Event base for the handler(always MQTT Base in this example).
- * @param event_id The id for the received event.
- * @param event_data The data for the event, esp_mqtt_event_handle_t.
- */
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
 {
     ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
@@ -126,14 +107,6 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
         msg_id = esp_mqtt_client_unsubscribe(client, "/topic/qos1");
         ESP_LOGI(TAG, "sent unsubscribe successful, msg_id=%d", msg_id);
-        // msg_id = esp_mqtt_client_unsubscribe(client, "/topic/qos1");
-        // ESP_LOGI(TAG, "sent unsubscribe successful, msg_id=%d", msg_id);
-
-        // // เพิ่มบรรทัดต่อไปนี้ โดยตั้งขื่อเป็น stu-<เลข 3 ตัวท้ายของรหัสนักศึกษา>
-        // msg_id = esp_mqtt_client_subscribe(client, "/stu_313/lamp1", 0);
-        // msg_id = esp_mqtt_client_subscribe(client, "/stu_313/lamp2", 0);
-        // msg_id = esp_mqtt_client_subscribe(client, "/stu_313/lamp3", 0);
-        // ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
         break;
     case MQTT_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
@@ -238,13 +211,11 @@ void app_main(void)
     gpio_pullup_dis(BUTTON2_PIN);
     gpio_set_intr_type(BUTTON2_PIN, GPIO_INTR_POSEDGE);
 
-    // FreeRTOS tas and queue
     interputQueue1 = xQueueCreate(10, sizeof(int));
     interputQueue2 = xQueueCreate(10, sizeof(int));
     xTaskCreate(LED_Control_Task, "LED_Control_Task", 2048, NULL, 1, NULL);
     xTaskCreate(LED2_Control_Task, "LED2_Control_Task", 2048, NULL, 1, NULL);
-
-    // install isr service and isr handler
+   
     gpio_install_isr_service(0);
     gpio_isr_handler_add(BUTTON1_PIN, gpio_interrupt_handler, (void *)BUTTON1_PIN);
     gpio_isr_handler_add(BUTTON2_PIN, gpio_interrupt_handler2, (void *)BUTTON2_PIN);
